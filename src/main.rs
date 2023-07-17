@@ -1,13 +1,17 @@
 use std::fs::File;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
+use cappy::ThreadPool;
 
 fn main() {
-    let listner = TcpListener::bind("127.0.0.1:3000").unwrap();
+    let listner = TcpListener::bind("127.0.0.1:9000").unwrap();
+    let pool = ThreadPool::new(4);
 
     for stream in listner.incoming() {
         let stream: TcpStream = stream.unwrap();
-        handle_connection(stream);
+        pool.execute( || {
+            handle_connection(stream);
+        });
     }
 }
 
